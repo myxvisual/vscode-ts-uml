@@ -1,0 +1,46 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "module": "commonjs",
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "skipLibCheck": true,
+      "target": "es2015",
+      "sourceMap": false,
+      "moduleResolution": "node",
+      "allowJs": false,
+      "declaration": false,
+      "jsx": "react",
+      "experimentalDecorators": true,
+      "removeComments": true,
+      "noImplicitAny": false,
+      "rootDir": ".",
+      "outDir": "out",
+      "noLib": false,
+      "resolveJsonModule": true,
+      "lib": ["dom", "es5", "es2015", "es2016.array.include"],
+      "typeRoots": [
+        "./node_modules/@types"
+      ]
+    },
+    "filesGlob": [
+      "**/*.ts",
+      "**/*.tsx"
+    ],
+    "include": [
+      "*.ts",
+      "**/*.ts",
+      "**/*.tsx",
+      "server/**/*.ts",
+      "__mocks__/**/*.ts",
+      "__mocks__/**/*.tsx"
+    ],
+    "files": [
+      "./node_modules/react-uwp/index.d.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "build"
+    ]
+  }
+  

@@ -1,0 +1,111 @@
+{
+  "name": "vscode-ts-uml",
+  "displayName": "vscode-ts-uml",
+  "description": "Dynamic generates TypeScript UML diagrams to VSCode",
+  "version": "0.0.1",
+  "publisher": "myxvisual",
+  "author": {
+    "name": "myxvisual",
+    "email": "myxvisual@live.com"
+  },
+  "icon": "icons/ts-128x128.png",
+  "galleryBanner": {
+      "color": "#005aa0",
+      "theme": "dark"
+  },
+  "homepage": "https://github.com/myxvisual/vscode-ts-uml/blob/master/README.md",
+  "repository": {
+    "git": "git@github.com:myxvisual/vscode-ts-uml.git",
+    "http": "https://github.com/myxvisual/vscode-ts-uml.git"
+  },
+  "bugs": {
+      "url": "https://github.com/myxvisual/vscode-ts-uml/issues",
+      "email": "myxvisual@live.com"
+  },
+  "engines": {
+    "vscode": "^1.25.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*",
+    "onCommand:tsUML.showFile",
+    "onCommand:tsUML.showFolder",
+    "onWebviewPanel:tsUML"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tsUML.showFile",
+        "title": "Show Typescript UML from file"
+      },
+      {
+        "command": "tsUML.showFolder",
+        "title": "Show Typescript UML from folder"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "tsUML.showFile",
+          "when": "resourceLangId == typescript"
+        },
+        {
+          "command": "tsUML.showFile",
+          "when": "resourceLangId == typescriptreact"
+        },
+        {
+          "command": "tsUML.showFolder",
+          "when": "explorerResourceIsFolder"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "key": "ctrl+shift+alt+q",
+        "mac": "cmd+shift+alt+q",
+        "command": "tsUML.showFile",
+        "when": "editorTextFocus && editorLangId == typescript"
+      },
+      {
+        "key": "ctrl+shift+alt+q",
+        "mac": "cmd+shift+alt+q",
+        "command": "tsUML.showFile",
+        "when": "editorFocus && editorLangId == typescriptreact"
+      }
+    ]
+  },
+  "scripts": {
+    "start": "npm run watch | npm run webpack:dev",
+    "webpack:dev": "cross-env NODE_ENV=development webpack-dev-server",
+    "webpack:build": "webpack",
+    "vscode:prepublish": "npm run compile && npm run webpack:build",
+    "compile": "tsc -p ./",
+    "watch": "cross-env NODE_ENV=development tsc -w -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "package:vsce": "vsce package"
+  },
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "react-uwp": "^1.2.2",
+    "typescript": "^3.0.1",
+    "vscode": "^1.1.21"
+  },
+  "devDependencies": {
+    "@types/node": "^10.5.2",
+    "@types/react": "^16.4.13",
+    "@types/react-dom": "^16.0.7",
+    "awesome-typescript-loader": "^5.2.1",
+    "json-loader": "^0.5.7",
+    "react": "^16.5.0",
+    "react-dom": "^16.5.0",
+    "react-hot-loader": "^4.3.3",
+    "webpack": "^4.21.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-middleware": "^1.10.1",
+    "webpack-dev-server": "^3.1.9",
+    "webpack-hot-middleware": "^2.17.0"
+  }
+}
