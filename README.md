@@ -1,8 +1,8 @@
 # vscode-ts-uml
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/myxvisua.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
-[![Installs](https://vsmarketplacebadge.apphb.com/installs/myxvisua.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
-[![Ratings](https://vsmarketplacebadge.apphb.com/rating/myxvisua.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
+[![Version](https://vsmarketplacebadge.apphb.com/version/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
+[![Ratings](https://vsmarketplacebadge.apphb.com/rating/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
 
 
 
