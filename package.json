@@ -88,20 +88,21 @@
     "package:vsce": "vsce package"
   },
   "dependencies": {
-    "cross-env": "^5.2.0",
-    "react-uwp": "^1.2.2",
+    "md5": "^2.2.1",
     "typescript": "^3.0.1",
-    "vscode": "^1.1.21"
+    "vscode": "^1.1.22"
   },
   "devDependencies": {
     "@types/node": "^10.5.2",
     "@types/react": "^16.4.13",
     "@types/react-dom": "^16.0.7",
     "awesome-typescript-loader": "^5.2.1",
+    "cross-env": "^5.2.0",
     "json-loader": "^0.5.7",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
     "react-hot-loader": "^4.3.3",
+    "react-uwp": "^1.2.2",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-middleware": "^1.10.1",

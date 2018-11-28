@@ -1,14 +1,11 @@
 # vscode-ts-uml
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
-[![Installs](https://vsmarketplacebadge.apphb.com/installs/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
-[![Ratings](https://vsmarketplacebadge.apphb.com/rating/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisua.vscode-ts-uml)
+[![Version](https://vsmarketplacebadge.apphb.com/version/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisual.vscode-ts-uml)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisual.vscode-ts-uml)
+[![Ratings](https://vsmarketplacebadge.apphb.com/rating/myxvisual.vscode-ts-uml.svg)](https://marketplace.visualstudio.com/items?itemName=myxvisual.vscode-ts-uml)
 
-
-
-
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/myxvisual/vscode-ts-uml.svg)](https://isitmaintained.com/project/vscode-icons/vscode-icons "Average time to resolve an issue")
-[![Percentage of issues still open](https://isitmaintained.com/badge/open/myxvisual/vscode-ts-uml.svg)](https://isitmaintained.com/project/vscode-icons/vscode-icons "Percentage of issues still open")
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/myxvisual/vscode-ts-uml.svg)](https://github.com/myxvisual/vscode-ts-uml/issues "Average time to resolve an issue")
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/myxvisual/vscode-ts-uml.svg)](https://github.com/myxvisual/vscode-ts-uml/issues?q=is%3Aopen+is%3Aissue "Percentage of issues still open")
 
 ---
 

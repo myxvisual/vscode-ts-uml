@@ -1,10 +1,11 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as md5 from "md5";
 import getFileDocEntries, { DocEntry } from './getFileDocEntries'
 import config from './config'
 
-const __DEV__ = process.env.NODE_ENV === "development";
+let __DEV__ = process.env.NODE_ENV === "development";
 const entryFileName = path.join(__dirname, "./entryFile.txt");
 let title = "TypeScript UML";
 
@@ -18,10 +19,17 @@ export function deactive() {
 let globalPanel: vscode.WebviewPanel;
 let globalExtensionPath: string;
 
+let prevMd5 = null;
 export function watchFile() {
+    if (!prevMd5) prevMd5 = md5(fs.readFileSync(currFile));
     fs.watchFile(currFile, (eventType, filename) => {
-        console.log("file is changed.")
-        UMLWebviewPanel.revive(globalPanel, globalExtensionPath);
+        if (filename) {
+            const currMd5 = md5(fs.readFileSync(currFile));
+            if (currMd5 !== prevMd5) {
+                UMLWebviewPanel.revive(globalPanel, globalExtensionPath);
+                prevMd5 = currMd5;
+            }
+        }
     });
 }
 
@@ -123,7 +131,7 @@ class UMLWebviewPanel {
         // Update the content based on view changes
         this._panel.onDidChangeViewState(e => {
             if (this._panel.visible) {
-                this._update()
+                // this._update()
             }
         }, null, this._disposables);
 
@@ -178,7 +186,7 @@ class UMLWebviewPanel {
         // }
         jsonStr = encodeURIComponent(jsonStr);
 
-        return `<!DOCTYPE html>
+        const htmlStr = `<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
@@ -193,6 +201,8 @@ class UMLWebviewPanel {
                 <script nonce="${nonce}" type="text/javascript" src="${__DEV__ ? "http://127.0.0.1:8092/js/app.js" : vendorUri}" charset="utf-8"></script>
             </body>
             </html>`;
+        // if (__DEV__) fs.writeFileSync("./WebView/preview.html", htmlStr);
+        return htmlStr;
     }
 }
 
