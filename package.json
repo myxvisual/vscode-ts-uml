@@ -2,7 +2,7 @@
   "name": "vscode-ts-uml",
   "displayName": "vscode-ts-uml",
   "description": "Dynamic generates TypeScript UML diagrams to VSCode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "myxvisual",
   "author": {
     "name": "myxvisual",
@@ -10,8 +10,8 @@
   },
   "icon": "icons/ts-128x128.png",
   "galleryBanner": {
-      "color": "#005aa0",
-      "theme": "dark"
+    "color": "#005aa0",
+    "theme": "dark"
   },
   "homepage": "https://github.com/myxvisual/vscode-ts-uml/blob/master/README.md",
   "repository": {
@@ -19,8 +19,8 @@
     "http": "https://github.com/myxvisual/vscode-ts-uml.git"
   },
   "bugs": {
-      "url": "https://github.com/myxvisual/vscode-ts-uml/issues",
-      "email": "myxvisual@live.com"
+    "url": "https://github.com/myxvisual/vscode-ts-uml/issues",
+    "email": "myxvisual@live.com"
   },
   "engines": {
     "vscode": "^1.25.0"
