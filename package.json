@@ -78,7 +78,7 @@
     ]
   },
   "scripts": {
-    "start": "npm run watch | npm run webpack:dev",
+    "start": "npm run watch | npm run webpack:p",
     "webpack:dev": "cross-env NODE_ENV=development webpack-dev-server",
     "webpack-p": "webpack",
     "webpack-w": "webpack -w",
