@@ -78,11 +78,11 @@
     ]
   },
   "scripts": {
-    "start": "npm run watch | npm run webpack:p",
+    "start": "npm run watch | npm run webpack-p",
     "webpack:dev": "cross-env NODE_ENV=development webpack-dev-server",
     "webpack-p": "webpack",
     "webpack-w": "webpack -w",
-    "vscode:prepublish": "npm run compile && npm run webpack:build",
+    "vscode:prepublish": "npm run compile && npm run webpack-p",
     "compile": "tsc -p ./",
     "watch": "cross-env NODE_ENV=development tsc -w -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
