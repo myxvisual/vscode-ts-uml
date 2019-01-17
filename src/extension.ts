@@ -5,7 +5,6 @@ import * as md5 from "md5";
 
 import getFileDocEntries, { DocEntry } from './getFileDocEntries'
 import config from './config'
-import { platform } from 'os';
 
 let __DEV__ = false;
 console.log(`__DEV__ is: ${__DEV__}`)

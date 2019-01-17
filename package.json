@@ -2,7 +2,7 @@
   "name": "vscode-ts-uml",
   "displayName": "vscode-ts-uml",
   "description": "Dynamic generates TypeScript UML diagrams to VSCode",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "myxvisual",
   "author": {
     "name": "myxvisual",
