@@ -80,7 +80,8 @@
   "scripts": {
     "start": "npm run watch | npm run webpack:dev",
     "webpack:dev": "cross-env NODE_ENV=development webpack-dev-server",
-    "webpack:build": "webpack",
+    "webpack-p": "webpack",
+    "webpack-w": "webpack -w",
     "vscode:prepublish": "npm run compile && npm run webpack:build",
     "compile": "tsc -p ./",
     "watch": "cross-env NODE_ENV=development tsc -w -p ./",

@@ -2,57 +2,69 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as md5 from "md5";
+
 import getFileDocEntries, { DocEntry } from './getFileDocEntries'
 import config from './config'
+import { platform } from 'os';
 
-let __DEV__ = process.env.NODE_ENV === "development";
-const entryFileName = path.join(__dirname, "./entryFile.txt");
+let __DEV__ = false;
+console.log(`__DEV__ is: ${__DEV__}`)
+const entryFileName = path.join(__dirname, "./entryFile.json");
 let title = "TypeScript UML";
 
 let docEntries: DocEntry[];
 
-let currFile: string = getEntryFile();
-
-export function deactive() {
-}
-
+let saveData = getSaveFileData();
 let globalPanel: vscode.WebviewPanel;
 let globalExtensionPath: string;
 
 let prevMd5 = null;
 export function watchFile() {
-    if (!prevMd5) prevMd5 = md5(fs.readFileSync(currFile));
-    fs.watchFile(currFile, (eventType, filename) => {
-        if (filename) {
-            const currMd5 = md5(fs.readFileSync(currFile));
-            if (currMd5 !== prevMd5) {
-                UMLWebviewPanel.revive(globalPanel, globalExtensionPath);
-                prevMd5 = currMd5;
-            }
+    if (fs.existsSync(saveData.entryFile)) {
+        if (!prevMd5) {
+            prevMd5 = md5(fs.readFileSync(saveData.entryFile));
         }
-    });
+        fs.watchFile(saveData.entryFile, (eventType, filename) => {
+            if (filename) {
+                const currMd5 = md5(fs.readFileSync(saveData.entryFile));
+                if (currMd5 !== prevMd5) {
+                    UMLWebviewPanel.revive(globalPanel, globalExtensionPath);
+                    prevMd5 = currMd5;
+                }
+            }
+        });
+    }
 }
 
-watchFile();
-
 export function activate(context: vscode.ExtensionContext) {
+    let newFile = "";
     async function commandCallback(fileUri: any) {
         if (fileUri !== void 0) {
             if (typeof fileUri === "string") {
-                currFile = fileUri;
+                newFile = fileUri;
             } else if (typeof fileUri === "object" && fileUri.path) {
-                currFile = fileUri.path;
+                newFile = fileUri.path;
             }
         } else {
-            currFile = "";
+            newFile = "";
             const { activeTextEditor } = vscode.window;
             if (activeTextEditor) {
-                if (!currFile) {
-                    currFile = activeTextEditor.document.fileName;
+                if (!newFile && activeTextEditor && activeTextEditor.document) {
+                    newFile = activeTextEditor.document.fileName;
                 }
             }
         }
-        saveEntryFile(currFile);
+        newFile = path.normalize(newFile)
+        if (process.platform === "win32" && newFile.startsWith("\\")) {
+            newFile = newFile.slice(1);
+        }
+        if (newFile !== saveData.entryFile) {
+            saveData.entryFile = newFile;
+            saveData.layout = "";
+        }
+        fs.unwatchFile(saveData.entryFile)
+        watchFile();
+        
         UMLWebviewPanel.createOrShow(context.extensionPath);
     }
     context.subscriptions.push(vscode.commands.registerCommand('tsUML.showFile', commandCallback));
@@ -62,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
         // Make sure we register a serilizer in activation event
         vscode.window.registerWebviewPanelSerializer(UMLWebviewPanel.viewType, {
             async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-                console.log(`Got state: ${state}`);
+                console.log(`Got state: ${JSON.stringify(state)}`);
                 globalPanel = webviewPanel;
                 globalExtensionPath = context.extensionPath;
                 UMLWebviewPanel.revive(webviewPanel, context.extensionPath);
@@ -89,6 +101,7 @@ class UMLWebviewPanel {
         // If we already have a panel, show it.
         if (UMLWebviewPanel.currentPanel) {
             UMLWebviewPanel.currentPanel._panel.reveal(column);
+            UMLWebviewPanel.currentPanel._update();
             return;
         }
 
@@ -104,6 +117,12 @@ class UMLWebviewPanel {
                 vscode.Uri.file(path.join(extensionPath, 'icons'))
             ]
         });
+        panel.webview.onDidReceiveMessage(
+            message => {
+                saveData.layout = message.layout;
+                saveDataToFile()
+            },
+        );
 
         globalPanel = panel;
         globalExtensionPath = extensionPath;
@@ -134,21 +153,6 @@ class UMLWebviewPanel {
                 // this._update()
             }
         }, null, this._disposables);
-
-        // Handle messages from the webview
-        this._panel.webview.onDidReceiveMessage(message => {
-            switch (message.command) {
-                case 'alert':
-                    vscode.window.showErrorMessage(message.text);
-                    return;
-            }
-        }, null, this._disposables);
-    }
-
-    public doRefactor() {
-        // Send a message to the webview webview.
-        // You can send any JSON serializable data.
-        this._panel.webview.postMessage({ command: 'refactor' });
     }
 
     public dispose() {
@@ -170,7 +174,10 @@ class UMLWebviewPanel {
     }
 
     private _getHtmlForWebview() {
-        docEntries = getFileDocEntries(currFile, 0, config);
+        console.log(saveData.entryFile)
+        if (saveData.entryFile) {
+            docEntries = getFileDocEntries(saveData.entryFile, 0, config);
+        }
         const nonce = getNonce();
         
         const favicon = vscode.Uri.file(path.join(this._extensionPath, 'icons/ts.png'));
@@ -180,11 +187,11 @@ class UMLWebviewPanel {
         const vendorScript = vscode.Uri.file(path.join(this._extensionPath, 'build/js/vendor.js'));
         const vendorUri = vendorScript.with({ scheme: 'vscode-resource' });
 
-        let jsonStr = JSON.stringify(docEntries);
-        // if (docEntries.length > 0) {
-        //     globalPanel.webview.postMessage({ fileDocEntries: jsonStr });
-        // }
-        jsonStr = encodeURIComponent(jsonStr);
+        let entriesStr = JSON.stringify(docEntries);
+        entriesStr = encodeURIComponent(entriesStr);
+        let layoutStr = JSON.stringify(saveData.layout);
+        layoutStr = encodeURIComponent(layoutStr);
+        saveDataToFile();
 
         const htmlStr = `<!DOCTYPE html>
             <html lang="en">
@@ -195,13 +202,13 @@ class UMLWebviewPanel {
                 <link rel="icon" type="image/png" sizes="32x32" href="${faviconUri}">
             </head>
             <body>
-                <span id="doc-entry" style="display: none;">${jsonStr}</span>
+                <span id="doc-entry" style="display: none;">${entriesStr}</span>
+                <span id="doc-layout" style="display: none;">${layoutStr}</span>
                 <div id="app"></div>
                 <script nonce="${nonce}" type="text/javascript" src="${__DEV__ ? "http://127.0.0.1:8092/js/vendor.js" : appUri}" charset="utf-8"></script>
                 <script nonce="${nonce}" type="text/javascript" src="${__DEV__ ? "http://127.0.0.1:8092/js/app.js" : vendorUri}" charset="utf-8"></script>
             </body>
             </html>`;
-        // if (__DEV__) fs.writeFileSync("./WebView/preview.html", htmlStr);
         return htmlStr;
     }
 }
@@ -215,10 +222,16 @@ function getNonce() {
     return text;
 }
 
-function saveEntryFile(entryFile: string) {
-    fs.writeFileSync(entryFileName, entryFile, { encoding: "utf8" });
+function saveDataToFile() {
+    fs.writeFileSync(entryFileName, JSON.stringify(saveData, null, 2), { encoding: "utf8" });
 }
 
-function getEntryFile() {
-    return fs.existsSync(entryFileName) ? fs.readFileSync(entryFileName, { encoding: "utf8" }) : ""
+function getSaveFileData() {
+    let data = { entryFile: "", layout: "" };
+    if (fs.existsSync(entryFileName)) {
+        try {
+            data = JSON.parse(fs.readFileSync(entryFileName, { encoding: "utf8" }));
+        } catch (e) {}
+    }
+    return data;
 }

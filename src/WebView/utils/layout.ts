@@ -1,5 +1,6 @@
 import { DocEntry } from "../components/DocEntry";
 import { Config, Position } from "../components/Board";
+import { type } from "os";
 
 export interface BoardLayout {
   contentPosition?: Position;
@@ -54,35 +55,42 @@ export function resetDefaultLayout(files: DocEntry[], config: Config) {
         memberPositions[memberName].position = { x: pisiton.x, y: pisiton.y };
       }
     } catch (e) {}
-    // if (file.members) {
-    //   let tablePrevLeft = 0;
-    //   file.members.forEach((docEntry, index) => {
-    //     memberPositions[docEntry.name] = {
-    //       position: {
-    //         x: tablePrevLeft,
-    //         y: 0
-    //       }
-    //     };
-    //     tablePrevLeft += docEntry.tableWidth + config.fileStyle.tableOffset;
-    //   });
-    // }
     prevLeft += file.fileWidth + config.fileStyle.fileOffset;
     prevTop += file.fileHeight + config.fileStyle.fileOffset;
   });
 
   writeStorage();
 }
-
 export function getLayout(files: DocEntry[], config: Config) {
   cachedFiles = files;
   cachedConfig = config;
   if (isVSCode) {
-    resetDefaultLayout(files, config);
+    let JSONStr: string = null;
+    const docEntryEl: Element = document.getElementById("doc-layout");
+    JSONStr = docEntryEl.innerHTML;
+    JSONStr = decodeURIComponent(JSONStr);
+    if (!JSONStr) {
+      layout = {};
+      resetDefaultLayout(files, config);
+    } else {
+      try {
+        layout = JSON.parse(JSONStr);
+      } catch (e) {
+        layout = {};
+        resetDefaultLayout(files, config);
+      }
+      if (typeof layout !== "object") {
+        layout = {};
+        resetDefaultLayout(files, config);
+      }
+    }
+    // console.log(JSON.stringify(layout))
   } else {
     const layoutStr = window.localStorage.getItem(STORAGE_NAME);
     if (layoutStr) {
       layout = JSON.parse(layoutStr) as BoardLayout;
     } else {
+      layout = {};
       resetDefaultLayout(files, config);
     }
   }
@@ -91,6 +99,8 @@ export function getLayout(files: DocEntry[], config: Config) {
 
 function writeStorage() {
   if (isVSCode) {
+    console.log("window.vscode.postMessage...")
+    window.vscode.postMessage({ layout });
   } else {
     localStorage.setItem(STORAGE_NAME, JSON.stringify(layout));
   }

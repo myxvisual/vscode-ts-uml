@@ -20,13 +20,6 @@ export interface Position {
   x: number;
   y: number;
 }
-declare var vscode;
-declare var acquireVsCodeApi;
-let oldState: any;
-if (window["acquireVsCodeApi"]) {
-  vscode = acquireVsCodeApi();
-  oldState = vscode.getState()
-}
 
 const gridConfig = {
   gridWitdh: window.innerWidth,
@@ -105,18 +98,6 @@ export class Board extends React.Component<BoardProps, BoardState> {
         divEl.style.background = "none";
       }
     })
-
-    // window.addEventListener('message', event => {
-    //   const message = event.data; // The JSON data our extension sent
-    //   if (message.fileDocEntries) {
-    //     const newFileDocEntries = JSON.parse(message.fileDocEntries);
-    //     if (newFileDocEntries.length > 0) {
-    //       this.setState({
-    //         fileDocEntries: newFileDocEntries
-    //       })
-    //     }
-    //   }
-    // });
   }
 
   componentWillUnmount() {
