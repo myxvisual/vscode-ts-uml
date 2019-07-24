@@ -1,1 +1,11 @@
 src
+dev.md
+.vscode
+package
+images
+webpack.config.js
+tsconfig.json
+.gitignore
+**/*.ts
+**/tsconfig.json
+
