@@ -4,7 +4,7 @@ import { addDragToSVGElement } from "../utils/addDragToSVGElement";
 
 import { Config } from "./Board";
 
-import { DocEntry } from "./DocEntry";
+import { DocEntry } from "../../getFileDocEntries";
 
 export interface DataProps extends DocEntry {
   onChangeView?: (tablePosition?: { x: number; y: number }) => void;

@@ -1,6 +1,6 @@
-import { DocEntry } from "../components/DocEntry";
+import { DocEntry } from "../../getFileDocEntries";
 import { Config, Position } from "../components/Board";
-import { type } from "os";
+export { Position };
 
 export interface BoardLayout {
   contentPosition?: Position;
@@ -20,11 +20,6 @@ export interface BoardLayout {
 let layout: BoardLayout = {};
 let cachedFiles: DocEntry[];
 let cachedConfig: Config;
-const STORAGE_NAME = "ts-uml-layout";
-let isVSCode = true;
-
-export { isVSCode };
-
 
 export function resetDefaultLayout(files: DocEntry[], config: Config) {
   // get default layout
@@ -50,9 +45,9 @@ export function resetDefaultLayout(files: DocEntry[], config: Config) {
     const layouts = config.showType === "export" ? file.exportLayouts : file.memberLayouts;
     try {
       for (const memberName in layouts.memberPositions) {
-        const pisiton = layouts.memberPositions[memberName];
+        const position = layouts.memberPositions[memberName];
         memberPositions[memberName] = {};
-        memberPositions[memberName].position = { x: pisiton.x, y: pisiton.y };
+        memberPositions[memberName].position = { x: position.x, y: position.y };
       }
     } catch (e) {}
     prevLeft += file.fileWidth + config.fileStyle.fileOffset;
@@ -61,49 +56,33 @@ export function resetDefaultLayout(files: DocEntry[], config: Config) {
 
   writeStorage();
 }
+
 export function getLayout(files: DocEntry[], config: Config) {
   cachedFiles = files;
   cachedConfig = config;
-  if (isVSCode) {
-    let JSONStr: string = null;
-    const docEntryEl: Element = document.getElementById("doc-layout");
-    JSONStr = docEntryEl.innerHTML;
-    JSONStr = decodeURIComponent(JSONStr);
-    if (!JSONStr) {
-      layout = {};
-      resetDefaultLayout(files, config);
-    } else {
-      try {
-        layout = JSON.parse(JSONStr);
-      } catch (e) {
-        layout = {};
-        resetDefaultLayout(files, config);
-      }
-      if (typeof layout !== "object") {
-        layout = {};
-        resetDefaultLayout(files, config);
-      }
-    }
-    // console.log(JSON.stringify(layout))
-  } else {
-    const layoutStr = window.localStorage.getItem(STORAGE_NAME);
-    if (layoutStr) {
-      layout = JSON.parse(layoutStr) as BoardLayout;
-    } else {
-      layout = {};
-      resetDefaultLayout(files, config);
+  
+  
+  const docEntryEl: Element = document.getElementById("doc-layout");
+  const JSONStr = docEntryEl.innerHTML.trim();
+  let settedLayout = false;
+  if (JSONStr) {
+    const savedLayout = JSON.parse(JSONStr);
+    if (savedLayout && savedLayout.filePositions && Object.keys(savedLayout.filePositions).length > 0) {
+      layout = savedLayout;
+      settedLayout = true;
     }
   }
+
+  if (!settedLayout) {
+    layout = {};
+    resetDefaultLayout(files, config);
+  }
+
   return layout;
 }
 
 function writeStorage() {
-  if (isVSCode) {
-    console.log("window.vscode.postMessage...")
-    window.vscode.postMessage({ layout });
-  } else {
-    localStorage.setItem(STORAGE_NAME, JSON.stringify(layout));
-  }
+  window.vscode.postMessage({ setLayout: layout });
 }
 
 const originP = { x: 0, y: 0 };
@@ -144,9 +123,7 @@ export function getFilePosition(filename: string) {
 export function setFilePosition(filename: string, position: Position) {
   try {
     layout.filePositions[filename].position = position;
-  } catch (e) {
-    if (!isVSCode) localStorage.setItem(STORAGE_NAME, "");
-  }
+  } catch (e) {}
   writeStorage();
 }
 
@@ -154,17 +131,13 @@ export function getTablePosition(filename: string, tableName: string) {
   let result = originP;
   try {
     result = layout.filePositions[filename].memberPositions[tableName].position;
-  } catch (e) {
-    if (!isVSCode) localStorage.setItem(STORAGE_NAME, "");
-  }
+  } catch (e) {}
   return result;
 }
 
 export function setTablePosition(filename: string, tableName: string, position: Position) {
   try {
     layout.filePositions[filename].memberPositions[tableName].position = position;
-  } catch (e) {
-    if (!isVSCode) localStorage.setItem(STORAGE_NAME, "");
-  }
+  } catch (e) {}
   writeStorage();
 }

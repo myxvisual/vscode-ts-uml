@@ -6,8 +6,6 @@ import * as md5 from "md5";
 import getFileDocEntries, { DocEntry } from './getFileDocEntries'
 import config from './config'
 
-let __DEV__ = false;
-console.log(`__DEV__ is: ${__DEV__}`)
 const entryFileName = path.join(__dirname, "./entryFile.json");
 let title = "TypeScript UML";
 
@@ -116,10 +114,22 @@ class UMLWebviewPanel {
                 vscode.Uri.file(path.join(extensionPath, 'icons'))
             ]
         });
+
+        let saveDataTimer = null;
         panel.webview.onDidReceiveMessage(
             message => {
-                saveData.layout = message.layout;
-                saveDataToFile()
+                console.log("onDidReceiveMessage: ", message)
+                if (message.boardWillMount) {
+                    panel.webview.postMessage({ docEntries });
+                }
+                if (message.getLayout) {
+                    panel.webview.postMessage({ layout: saveData.layout });
+                }
+                if (message.setLayout) {
+                    saveData.layout = message.setLayout;
+                    clearTimeout(saveDataTimer);
+                    saveDataTimer = setTimeout(saveDataToFile, 200);
+                }
             },
         );
 
@@ -173,10 +183,6 @@ class UMLWebviewPanel {
     }
 
     private _getHtmlForWebview() {
-        console.log(saveData.entryFile)
-        if (saveData.entryFile) {
-            docEntries = getFileDocEntries(saveData.entryFile, 0, config);
-        }
         const nonce = getNonce();
         
         const favicon = vscode.Uri.file(path.join(this._extensionPath, 'icons/ts.png'));
@@ -186,10 +192,11 @@ class UMLWebviewPanel {
         const vendorScript = vscode.Uri.file(path.join(this._extensionPath, 'build/js/vendor.js'));
         const vendorUri = vendorScript.with({ scheme: 'vscode-resource' });
 
-        let entriesStr = JSON.stringify(docEntries);
-        entriesStr = encodeURIComponent(entriesStr);
+        if (saveData.entryFile) {
+            docEntries = getFileDocEntries(saveData.entryFile, 0, config);
+        }
         let layoutStr = JSON.stringify(saveData.layout);
-        layoutStr = encodeURIComponent(layoutStr);
+        console.log("layout: ", saveData.layout);
         saveDataToFile();
 
         const htmlStr = `<!DOCTYPE html>
@@ -201,11 +208,10 @@ class UMLWebviewPanel {
                 <link rel="icon" type="image/png" sizes="32x32" href="${faviconUri}">
             </head>
             <body>
-                <span id="doc-entry" style="display: none;">${entriesStr}</span>
                 <span id="doc-layout" style="display: none;">${layoutStr}</span>
                 <div id="app"></div>
-                <script nonce="${nonce}" type="text/javascript" src="${__DEV__ ? "http://127.0.0.1:8092/js/vendor.js" : appUri}" charset="utf-8"></script>
-                <script nonce="${nonce}" type="text/javascript" src="${__DEV__ ? "http://127.0.0.1:8092/js/app.js" : vendorUri}" charset="utf-8"></script>
+                <script nonce="${nonce}" type="text/javascript" src="${appUri}" charset="utf-8"></script>
+                <script nonce="${nonce}" type="text/javascript" src="${vendorUri}" charset="utf-8"></script>
             </body>
             </html>`;
         return htmlStr;
@@ -222,6 +228,7 @@ function getNonce() {
 }
 
 function saveDataToFile() {
+    console.log("saveDataToFile: ", saveData);
     fs.writeFileSync(entryFileName, JSON.stringify(saveData, null, 2), { encoding: "utf8" });
 }
 

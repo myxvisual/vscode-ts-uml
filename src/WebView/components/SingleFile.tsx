@@ -6,10 +6,10 @@ import { getTranslate } from "../utils/getTransform";
 import { addDragToSVGElement } from "../utils/addDragToSVGElement";
 import { getTablePosition, setTablePosition, getContentLayout } from "../utils/layout";
 import { TypeOut, TypeIn } from "./Content";
-import { isVSCode } from "../utils/layout";
-const originOffsetX = isVSCode ? -20 : 0;
 
-import { DocEntry } from "./DocEntry";
+const originOffsetX = -20;
+
+import { DocEntry } from "../../getFileDocEntries";
 export interface DataProps extends DocEntry {
   onChangeView?: (position?: { x: number; y: number }) => void;
 }

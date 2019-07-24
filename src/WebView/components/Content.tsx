@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import { DocEntry } from "./DocEntry";
+import { DocEntry } from "../../getFileDocEntries";
 import SingleFile from "./SingleFile";
 import { Config } from "./Board";
 import { getConnectPathString } from "../utils/getConnectPathString";
-import { getLayout, getFilePosition, setFilePosition , getContentLayout } from "../utils/layout";
+import { getLayout, getFilePosition, setFilePosition, BoardLayout } from "../utils/layout";
 export interface Position {
   x: number;
   y: number;
@@ -28,6 +28,10 @@ export interface ContentProps extends DataProps, React.SVGAttributes<SVGGElement
 export interface DataProps {
   fileDocEntries?: DocEntry[];
 }
+export interface ContentState {
+  layout?: BoardLayout;
+}
+
 export interface Position {
   x: number;
   y: number;
@@ -50,7 +54,7 @@ export interface TypeIn {
   filename: string;
 }
 
-export class Content extends React.Component<ContentProps> {
+export class Content extends React.Component<ContentProps, ContentState> {
   static contextTypes = { config: PropTypes.object };
   context: { config: Config };
   rootEl: SVGGElement;
@@ -169,7 +173,7 @@ export class Content extends React.Component<ContentProps> {
     }
     this.singleFiles = [];
     const layout = getLayout(fileDocEntries, this.context.config);
-    const contentLayout = getContentLayout();
+    const contentLayout = { position: layout.contentPosition, scale: layout.contentScale };
 
     return (
       <g

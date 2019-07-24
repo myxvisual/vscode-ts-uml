@@ -1,10 +1,8 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import Content, { DocEntry } from "./Content";
-import ControlTool from "./ControlTool";
 import { getScale, getTranslate } from "../utils/getTransform";
-import { setContentLayout, isVSCode } from "../utils/layout";
-import * as devDefaultFileDocEntries from "./devDefaultFileDocEntries.json";
+import { setContentLayout } from "../utils/layout";
 import Grid from './Grid';
 import { config, Config } from "../../config";
 import { Theme, getTheme } from "react-uwp/Theme";
@@ -37,6 +35,7 @@ export interface BoardProps extends DataProps, React.HTMLAttributes<SVGElement>,
 
 export interface BoardState {
   config?: Config;
+  fileDocEntriesStr?: string;
   fileDocEntries?: DocEntry[];
 }
 
@@ -47,7 +46,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
   showScaleEl: HTMLSpanElement;
   state: BoardState = {
     config,
-    fileDocEntries: isVSCode ? [] : devDefaultFileDocEntries
+    fileDocEntries: []
   }
   mouseStatPosition: {
     x?: number;
@@ -85,9 +84,20 @@ export class Board extends React.Component<BoardProps, BoardState> {
   grid: Grid;
 
   componentWillMount() {
+    window.addEventListener("message", this.handleMessage);
+    
+    window.vscode.postMessage({ boardWillMount: true });
     const parentEl = document.querySelector("body");
     parentEl.style.overflow = "hidden";
     parentEl.style.margin = "0";
+  }
+
+  handleMessage = (event: any) => {
+    const message = event.data; // The JSON data our extension sent
+
+    if (message.docEntries) {
+      this.setState({ fileDocEntries: message.docEntries });
+    }
   }
 
   componentDidMount() {
@@ -101,6 +111,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
   }
 
   componentWillUnmount() {
+    window.removeEventListener("message", this.handleMessage);
     window.removeEventListener("resize", this.resize);
     this.rootEl.removeEventListener("wheel", this.handleWheel);
   }
@@ -192,15 +203,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
     const { connectPathStyle, contentStyle, theme, showType } = this.getChildContext().config as Config;
     const { arrowSize, color } = connectPathStyle;
 
-    // const { fileDocEntries } = this.state;
-
-    let JSONStr: string = null;
-    if (isVSCode) {
-      const docEntryEl: Element = document.getElementById("doc-entry");
-      JSONStr = docEntryEl.innerHTML;
-      JSONStr = decodeURIComponent(JSONStr);
-    }
-    const fileDocEntries = isVSCode ? JSON.parse(JSONStr) : devDefaultFileDocEntries;
+    const { fileDocEntries } = this.state;
 
     return (
       <div>
@@ -211,22 +214,24 @@ export class Board extends React.Component<BoardProps, BoardState> {
           onMouseUp={this.handleMouseUp}
           fill={contentStyle.background}
         >
-        <defs>
-          <marker
-            id="arrowStart"
-            orient="auto"
-            markerHeight={arrowSize * 2}
-            markerWidth={arrowSize}
-            refY={arrowSize}
-            refX="0"
-          >
-            <path d={`M0,0 V${arrowSize * 2} L${arrowSize},${arrowSize} Z`} fill={color} />
-          </marker>
-        </defs>
+          <defs>
+            <marker
+              id="arrowStart"
+              orient="auto"
+              markerHeight={arrowSize * 2}
+              markerWidth={arrowSize}
+              refY={arrowSize}
+              refX="0"
+            >
+              <path d={`M0,0 V${arrowSize * 2} L${arrowSize},${arrowSize} Z`} fill={color} />
+            </marker>
+          </defs>
           <Content key={showType} ref={content => this.content = content} fileDocEntries={fileDocEntries} />
         </svg>
+
         {/* <Grid {...gridConfig} ref={grid => this.grid = grid} /> */}
-        <div style={{ position: "fixed", right: 20, top: 20 }}>
+
+        {/* <div style={{ position: "fixed", right: 20, top: 20 }}>
           <Theme
             theme={getTheme({
               themeName: "dark",
@@ -274,7 +279,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
               </Button>
             </div>
           </Theme>
-        </div>
+        </div> */}
       </div>
     );
   }
