@@ -71,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
         // Make sure we register a serilizer in activation event
         vscode.window.registerWebviewPanelSerializer(UMLWebviewPanel.viewType, {
             async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-                console.log(`Got state: ${JSON.stringify(state)}`);
+                // console.log(`Got state: ${JSON.stringify(state)}`);
                 globalPanel = webviewPanel;
                 globalExtensionPath = context.extensionPath;
                 UMLWebviewPanel.revive(webviewPanel, context.extensionPath);
@@ -118,7 +118,7 @@ class UMLWebviewPanel {
         let saveDataTimer = null;
         panel.webview.onDidReceiveMessage(
             message => {
-                console.log("onDidReceiveMessage: ", message)
+                // console.log("onDidReceiveMessage: ", message)
                 if (message.boardWillMount) {
                     panel.webview.postMessage({ docEntries });
                 }
@@ -196,8 +196,19 @@ class UMLWebviewPanel {
             docEntries = getFileDocEntries(saveData.entryFile, 0, config);
         }
         let layoutStr = JSON.stringify(saveData.layout);
-        console.log("layout: ", saveData.layout);
+        // console.log("layout: ", saveData.layout);
         saveDataToFile();
+        this._panel.webview.onDidReceiveMessage(
+            message => {
+                // console.log("onDidReceiveMessage: ", message)
+                if (message.boardWillMount) {
+                    this._panel.webview.postMessage({ docEntries });
+                }
+                if (message.getLayout) {
+                    this._panel.webview.postMessage({ layout: saveData.layout });
+                }
+            },
+        );
 
         const htmlStr = `<!DOCTYPE html>
             <html lang="en">
@@ -228,7 +239,7 @@ function getNonce() {
 }
 
 function saveDataToFile() {
-    console.log("saveDataToFile: ", saveData);
+    // console.log("saveDataToFile: ", saveData);
     fs.writeFileSync(entryFileName, JSON.stringify(saveData, null, 2), { encoding: "utf8" });
 }
 

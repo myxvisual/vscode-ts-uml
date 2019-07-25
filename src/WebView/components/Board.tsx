@@ -84,9 +84,8 @@ export class Board extends React.Component<BoardProps, BoardState> {
   grid: Grid;
 
   componentWillMount() {
-    window.addEventListener("message", this.handleMessage);
-    
     window.vscode.postMessage({ boardWillMount: true });
+    window.addEventListener("message", this.handleMessage);
     const parentEl = document.querySelector("body");
     parentEl.style.overflow = "hidden";
     parentEl.style.margin = "0";
@@ -117,6 +116,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
   }
 
   handleWheel = (e: WheelEvent) => {
+    if (!this.content) return;
     const el = this.content.rootEl;
     if (e.ctrlKey) {
       this.originTransform.scale = Number((this.originTransform.scale + e.deltaY * .001).toFixed(2));
@@ -136,6 +136,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
   }
 
   updateScale = (offsetScale: number) => {
+    if (!this.content) return;
     const el = this.content.rootEl;
     this.originTransform.scale = Number((this.originTransform.scale + offsetScale).toFixed(2));
     if (this.originTransform.scale < .01) {
@@ -150,13 +151,16 @@ export class Board extends React.Component<BoardProps, BoardState> {
     const { innerHeight, innerWidth } = window;
     this.rootEl.style.height = `${innerHeight}px`;
     this.rootEl.style.width = `${innerWidth}px`;
-    this.grid.setState({
-      currGridWitdh: innerWidth,
-      currGridHeight: innerHeight
-    });
+    if (this.grid) {
+      this.grid.setState({
+        currGridWitdh: innerWidth,
+        currGridHeight: innerHeight
+      });
+    }
   }
 
   setOriginTransform = () => {
+    if (!this.content) return;
     const el = this.content.rootEl;
     this.screenMatrix = el.getScreenCTM();
     const transform = el.getAttributeNS(null, "transform");
@@ -181,6 +185,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
   }
 
   handleMouseMove = (e: MouseEvent) => {
+    if (!this.content) return;
     const el = this.content.rootEl;
     const offsetX = e.clientX / this.screenMatrix.a - this.mouseStatPosition.x;
     const offsetY = e.clientY / this.screenMatrix.d - this.mouseStatPosition.y;
@@ -226,7 +231,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
               <path d={`M0,0 V${arrowSize * 2} L${arrowSize},${arrowSize} Z`} fill={color} />
             </marker>
           </defs>
-          <Content key={showType} ref={content => this.content = content} fileDocEntries={fileDocEntries} />
+          {fileDocEntries && fileDocEntries.length > 0 && <Content key={showType} ref={content => this.content = content} fileDocEntries={fileDocEntries} />}
         </svg>
 
         {/* <Grid {...gridConfig} ref={grid => this.grid = grid} /> */}
