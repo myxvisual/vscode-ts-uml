@@ -177,7 +177,6 @@ export class Content extends React.Component<ContentProps, ContentState> {
 
     return (
       <g
-        {...attributes}
         transform={`translate(${contentLayout.position.x}, ${contentLayout.position.y}) scale(${layout.contentScale})`}
         scale={contentLayout.scale}
         ref={rootEl => this.rootEl = rootEl}

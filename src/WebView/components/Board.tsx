@@ -231,7 +231,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
 
         {/* <Grid {...gridConfig} ref={grid => this.grid = grid} /> */}
 
-        {/* <div style={{ position: "fixed", right: 20, top: 20 }}>
+        <div style={{ position: "fixed", right: 20, top: 20 }}>
           <Theme
             theme={getTheme({
               themeName: "dark",
@@ -256,7 +256,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
                 style={{ marginBottom: 16 }}
                 key={config.showType}
                 defaultChecked={config.showType === "export"}
-                label="Just Show Export"
+                label="Only Export"
               />
             </div>
             <div>
@@ -279,7 +279,8 @@ export class Board extends React.Component<BoardProps, BoardState> {
               </Button>
             </div>
           </Theme>
-        </div> */}
+        </div>
+        
       </div>
     );
   }

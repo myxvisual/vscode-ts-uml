@@ -36,7 +36,7 @@ export interface Config {
 
 export const config: Config = {
     getAllLocalMembers: true,
-    showType: "member",
+    showType: "export",
     fileMaxDepth: 0,
     tableStyle: {
       itemPadding: 12,

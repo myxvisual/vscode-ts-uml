@@ -58,10 +58,6 @@ export function resetDefaultLayout(files: DocEntry[], config: Config) {
 }
 
 export function getLayout(files: DocEntry[], config: Config) {
-  cachedFiles = files;
-  cachedConfig = config;
-  
-  
   const docEntryEl: Element = document.getElementById("doc-layout");
   const JSONStr = docEntryEl.innerHTML.trim();
   let settedLayout = false;
@@ -75,6 +71,8 @@ export function getLayout(files: DocEntry[], config: Config) {
 
   if (!settedLayout) {
     layout = {};
+    cachedFiles = files;
+    cachedConfig = config;
     resetDefaultLayout(files, config);
   }
 
