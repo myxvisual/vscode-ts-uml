@@ -83,7 +83,7 @@
     "watch": "cross-env NODE_ENV=development tsc -w -p ./",
     "vscode:prepublish": "npm run compile && npm run webpack-p",
     "compile": "tsc -p ./",
-    "webpack-p": "webpack",
+    "webpack-p": "cross-env NODE_ENV=production webpack",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "package:vsce": "vsce package",
     "publish:vsce": "vsce publish"
