@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export interface DataProps {
-  gridWitdh: number;
+  gridWidth: number;
   gridHeight: number;
   lineColor: string;
   gridSize: number;
@@ -15,7 +15,7 @@ export interface GridState {
   offsetX: number;
   offsetY: number;
   scale?: number;
-  currGridWitdh: number;
+  currGridWidth: number;
   currGridHeight: number;
 }
 
@@ -24,12 +24,12 @@ export class Grid extends React.Component<GridProps, GridState> {
     offsetX: 0,
     offsetY: 0,
     scale: 1,
-    currGridWitdh: this.props.gridWitdh,
+    currGridWidth: this.props.gridWidth,
     currGridHeight: this.props.gridHeight
   }
   render() {
     const {
-      gridWitdh,
+      gridWidth: gridWitdh,
       gridHeight,
       lineColor,
       gridSize,
@@ -40,7 +40,7 @@ export class Grid extends React.Component<GridProps, GridState> {
       offsetX,
       offsetY,
       scale,
-      currGridWitdh,
+      currGridWidth: currGridWidth,
       currGridHeight
     } = this.state
     const rootStyle = {
@@ -52,7 +52,7 @@ export class Grid extends React.Component<GridProps, GridState> {
       pointerEvents: "none"
     } as React.CSSProperties;
 
-    let rowMaxCount = currGridWitdh / scale / gridSize;
+    let rowMaxCount = currGridWidth / scale / gridSize;
     rowMaxCount = Number.isInteger(rowMaxCount) ? rowMaxCount + 1 : Math.ceil(rowMaxCount);
 
     return (
@@ -73,7 +73,7 @@ export class Grid extends React.Component<GridProps, GridState> {
             <line
               x1="0"
               y1={x}
-              x2={currGridWitdh}
+              x2={currGridWidth}
               y2={x}
               stroke={lineColor}
               strokeOpacity={.5}
@@ -96,7 +96,7 @@ export class Grid extends React.Component<GridProps, GridState> {
             <line
               x1="0"
               y1={x}
-              x2={currGridWitdh}
+              x2={currGridWidth}
               y2={x}
               stroke={lineColor}
               strokeWidth={strokeWidth}

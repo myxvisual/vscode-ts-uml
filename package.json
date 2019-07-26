@@ -2,7 +2,7 @@
   "name": "vscode-ts-uml",
   "displayName": "vscode-ts-uml",
   "description": "Dynamic generates TypeScript UML diagrams to VSCode",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "myxvisual",
   "author": {
     "name": "myxvisual",
@@ -79,7 +79,7 @@
   },
   "scripts": {
     "start": "npm run watch | npm run webpack-w",
-    "webpack-w": "webpack -w",
+    "webpack-w": "cross-env NODE_ENV=development webpack -w",
     "watch": "cross-env NODE_ENV=development tsc -w -p ./",
     "vscode:prepublish": "npm run compile && npm run webpack-p",
     "compile": "tsc -p ./",

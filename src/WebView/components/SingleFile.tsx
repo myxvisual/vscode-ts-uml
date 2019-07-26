@@ -12,6 +12,7 @@ const originOffsetX = -20;
 import { DocEntry } from "../../getFileDocEntries";
 export interface DataProps extends DocEntry {
   onChangeView?: (position?: { x: number; y: number }) => void;
+  originMembers?: DocEntry[];
 }
 export interface SingleFileProps extends DataProps, React.SVGAttributes<SVGGElement> {}
 
@@ -108,7 +109,7 @@ export class SingleFile extends React.Component<SingleFileProps> {
 
       if (members) {
         members.forEach((member, index) => {
-          const escapedName = member.type.match(reType)[1];
+          const escapedName = reType.test(member.type) ? member.type.match(reType)[1] : member.name;
           let localIndex = -1;
           if (escapedName) {
             for (const index in locals) {
@@ -174,7 +175,7 @@ export class SingleFile extends React.Component<SingleFileProps> {
 
         while (index < extendsSize) {
           const extendsItem: DocEntry = docEntry.extends[index] as DocEntry;
-          const escapedName = extendsItem.name.match(reType)[1];
+          const escapedName = reType.test(extendsItem.name) ? extendsItem.name.match(reType)[1] : extendsItem.name;
 
           // Get ReactComponent Extends
           if (escapedName === "Component") {
@@ -280,6 +281,7 @@ export class SingleFile extends React.Component<SingleFileProps> {
       exportLayouts,
       escapedName,
       exportMembers,
+      originMembers,
       ...attributes
     } = this.props;
     const { config } = this.context;

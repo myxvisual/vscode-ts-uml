@@ -32,6 +32,7 @@ export class Table extends React.Component<TableProps> {
       tableHeight,
       valueDeclarationText,
       escapedName,
+      initializerText,
       ...attributes
     } = this.props;
     const { config } = this.context;

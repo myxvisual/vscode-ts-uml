@@ -20,7 +20,7 @@ export interface Position {
 }
 
 const gridConfig = {
-  gridWitdh: window.innerWidth,
+  gridWidth: window.innerWidth,
   gridHeight: window.innerHeight,
   lineColor: "#000",
   gridSize: 100,
@@ -153,7 +153,7 @@ export class Board extends React.Component<BoardProps, BoardState> {
     this.rootEl.style.width = `${innerWidth}px`;
     if (this.grid) {
       this.grid.setState({
-        currGridWitdh: innerWidth,
+        currGridWidth: innerWidth,
         currGridHeight: innerHeight
       });
     }

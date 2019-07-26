@@ -114,24 +114,8 @@ class UMLWebviewPanel {
                 vscode.Uri.file(path.join(extensionPath, 'icons'))
             ]
         });
-
-        let saveDataTimer = null;
-        panel.webview.onDidReceiveMessage(
-            message => {
-                // console.log("onDidReceiveMessage: ", message)
-                if (message.boardWillMount) {
-                    panel.webview.postMessage({ docEntries });
-                }
-                if (message.getLayout) {
-                    panel.webview.postMessage({ layout: saveData.layout });
-                }
-                if (message.setLayout) {
-                    saveData.layout = message.setLayout;
-                    clearTimeout(saveDataTimer);
-                    saveDataTimer = setTimeout(saveDataToFile, 200);
-                }
-            },
-        );
+        
+        addDidReceiveMessage(panel);
 
         globalPanel = panel;
         globalExtensionPath = extensionPath;
@@ -198,17 +182,7 @@ class UMLWebviewPanel {
         let layoutStr = JSON.stringify(saveData.layout);
         // console.log("layout: ", saveData.layout);
         saveDataToFile();
-        this._panel.webview.onDidReceiveMessage(
-            message => {
-                // console.log("onDidReceiveMessage: ", message)
-                if (message.boardWillMount) {
-                    this._panel.webview.postMessage({ docEntries });
-                }
-                if (message.getLayout) {
-                    this._panel.webview.postMessage({ layout: saveData.layout });
-                }
-            },
-        );
+        addDidReceiveMessage(this._panel);
 
         const htmlStr = `<!DOCTYPE html>
             <html lang="en">
@@ -227,6 +201,29 @@ class UMLWebviewPanel {
             </html>`;
         return htmlStr;
     }
+}
+
+function addDidReceiveMessage(panel: vscode.WebviewPanel) {
+    let saveDataTimer = null;
+    panel.webview.onDidReceiveMessage(
+        message => {
+            // console.log("onDidReceiveMessage: ", message)
+            if (message.boardWillMount) {
+                panel.webview.postMessage({ docEntries });
+            }
+            if (message.getLayout) {
+                panel.webview.postMessage({ layout: saveData.layout });
+            }
+            if (message.error) {
+                console.error(message.error);
+            }
+            if (message.setLayout) {
+                saveData.layout = message.setLayout;
+                clearTimeout(saveDataTimer);
+                saveDataTimer = setTimeout(saveDataToFile, 200);
+            }
+        },
+    );
 }
 
 function getNonce() {

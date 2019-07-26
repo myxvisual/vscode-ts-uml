@@ -1,5 +1,6 @@
 import Parser, { DocEntry as DefaultDocEntry } from "./Parser";
-import { Config } from './config'
+import { Config } from "./config";
+export { Config };
 
 export interface DocEntry extends DefaultDocEntry {
   rowIndex?: number;
@@ -156,7 +157,7 @@ export function setLayouts(currFileName: string, startRowIndex: number = 0, conf
       if (type === "Interface" || type === "Class") {
         if (!members) return;
         members.forEach((member: DocEntry, index) => {
-          const escapedName = member.type.match(reType)[1];
+          const escapedName = reType.test(member.type) ? member.type.match(reType)[1] : member.name;
           let localIndex = -1;
           if (escapedName) {
             for (const index in fileDocEntry.locals) {
@@ -289,43 +290,3 @@ export function setLayouts(currFileName: string, startRowIndex: number = 0, conf
 }
 
 export default getFileDocEntries;
-
-export const testConfig: Config = {
-  getAllLocalMembers: true,
-  showType: "member",
-  fileMaxDepth: 0,
-  tableStyle: {
-    itemPadding: 12,
-    textPadding: 20,
-    headerHeight: 36,
-    itemHeight: 28,
-    headerFontSize: 14,
-    itemFontSize: 12
-  },
-  fileStyle: {
-    widthPadding: 8,
-    heightPadding: 16,
-    headerHeight: 24,
-    headerFontSize: 12,
-    tableOffset: 48,
-    fileOffset: 40
-  },
-  connectPathStyle: {
-    color: "#333",
-    strokeDasharray: "4 2",
-    arrowSize: 6
-  },
-  contentStyle: {
-    background: "#e5e5e5",
-    padding: 24
-  },
-  theme: {
-    accent: 0 ? "red" : "#005aa0"
-  },
-  maxShowTypeLength: 20
-};
-
-// const testFile = "d:/react-boilerplate/server/typings/db.d.ts"
-// const testFile = "d:/react-boilerplate/tb-helper.ts"
-// const testFile = "d:/react-boilerplate/src/index.tsx"
-// const result = getFileDocEntries(testFile, 0, testConfig);
